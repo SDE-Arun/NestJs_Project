@@ -7,8 +7,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/signup')
-  signup(@Body() input: AuthDTO) {
-    return this.authService.signUp(input);
+  signup(@Body() createInput: AuthDTO) {
+    return this.authService.signUp(createInput);
   }
 
   @Post('/signin')

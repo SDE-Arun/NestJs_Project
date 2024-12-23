@@ -3,28 +3,33 @@ import { PrismaConnectionService } from '../prisma-connection/prisma-connection.
 import { AuthDTO } from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prismaService: PrismaConnectionService) {}
+  constructor(
+    private readonly prismaService: PrismaConnectionService,
+    private jwtService: JwtService,
+    private readonly configService: ConfigService
+  ) {}
 
-  // write now type of input is any
-  async signUp(input: AuthDTO) {
-    const hashPassword = await argon.hash(input.password);
+  async signUp(create: AuthDTO) {
+    const hashPassword = await argon.hash(create.password);
     try {
       const user = await this.prismaService.user.create({
         data: {
-          email: input.email,
+          email: create.email,
           hash: hashPassword,
         },
-        //? we only get these below things in the output after success
+        //* we are only gettingk these below things in the output after success
         select: {
           id: true,
           email: true,
           createdAt: true,
         },
       });
-      return user;
+      return this.generateToken(user.id, user.email);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -34,6 +39,7 @@ export class AuthService {
       throw error;
     }
   }
+
   async signIn(input: AuthDTO) {
     const user = await this.prismaService.user.findUnique({
       where: { email: input.email },
@@ -43,8 +49,18 @@ export class AuthService {
     const isPasswordMatch = await argon.verify(user.hash, input.password);
     if (!isPasswordMatch) throw new ForbiddenException('Credentials are incorrect');
 
-    delete user.hash;
-    return user;
-    // return { msg: 'we are signed up' };
+    return this.generateToken(user.id, user.email);
+  }
+
+  async generateToken(userId: number, email: string): Promise<{ access_token: string }> {
+    const payload = {
+      sub: userId,
+      email,
+    };
+    const token = await this.jwtService.signAsync(payload, {
+      expiresIn: '15m',
+      secret: this.configService.get('JWT_SECRET'),
+    });
+    return { access_token: token };
   }
 }
