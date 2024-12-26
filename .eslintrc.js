@@ -15,8 +15,9 @@ module.exports = {
   ignorePatterns: ['.eslintrc.js'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',  
+    '@typescript-eslint/explicit-function-return-type': 'off',
     'no-console': 'warn',
+    'no-absolute-path': 'error',
     'simple-import-sort/imports': [
       'error',
       {
@@ -37,5 +38,13 @@ module.exports = {
         ],
       },
     ],
+    // 'prettier/prettier': 'error',
   },
+  // settings: {
+  //   'import/resolver': {
+  //     typescript: {
+  //       project: 'tsconfig.json', // Resolve paths using tsconfig.json
+  //     },
+  //   },
+  // },
 };
