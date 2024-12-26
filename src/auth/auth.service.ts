@@ -22,7 +22,7 @@ export class AuthService {
           email: create.email,
           hash: hashPassword,
         },
-        //* we are only gettingk these below things in the output after success
+        //* we are only getting these below things in the output after success
         select: {
           id: true,
           email: true,

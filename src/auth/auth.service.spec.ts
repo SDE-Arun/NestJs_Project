@@ -25,7 +25,7 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
-  // describe('create User', () => {
+  // describe('signUp function', () => {
   //   let mockInput: AuthDTO;
   //   beforeEach(() => {
   //     mockInput = {
@@ -34,15 +34,15 @@ describe('AuthService', () => {
   //     };
   //   });
 
-  // afterEach(() => {
-  //   jest.clearAllMocks();
-  // });
+  //   afterEach(() => {
+  //     jest.clearAllMocks();
+  //   });
 
-  // it('should call the signUp function', async () => {
-  //   const result = await service.signUp(mockInput);
-  //   console.log(result);
+  //   it('should call the signUp function', async () => {
+  //     const result = await service.signUp(mockInput);
+  //     console.log(result);
 
-  //   expect(result).toHaveBeenCalled();
-  // });
+  //     expect(result).toHaveBeenCalled();
+  //   });
   // });
 });
