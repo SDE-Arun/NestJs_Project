@@ -67,14 +67,3 @@ jobs:
           name: build-artifacts
           path: dist/
 
-  deploy:
-    name: Deploy Application
-    runs-on: ubuntu-22.04
-    needs: build
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      - name: Deploy Application
-        run: ./deploy.sh
-        env:
-          DEPLOY_ENV: production
