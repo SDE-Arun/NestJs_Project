@@ -11,58 +11,32 @@ on:
       - main
 
 jobs:
-  lint:
-    name: Lint Code
+  build-and-test:
+    name: Build and Test Application
     runs-on: ubuntu-22.04
     steps:
+        # Step 1: Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v3
+        # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20.11.1
+        # Step 3: Install Dependencies
       - name: Install Dependencies
         run: yarn install
-      - name: Lint Code
-        run: yarn lint
-
-  build:
-    name: Build Application
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.11.1
-      - name: Install Dependencies
-        run: yarn install
+        # Step 4: Build the Application
       - name: Build Application
         run: yarn build
+        # Step 5: Run Unit Tests
+      - name: Run Unit Tests
+        run: yarn test
+        # Step 6: Run End-to-End (E2E) Tests
+      - name: Run E2E Tests
+        run: yarn test:e2e
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts
           path: dist/
-          
-  test:
-    name: Run Tests
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.11.1
-      - name: Install Dependencies
-        run: yarn install
-      - name: Run Tests
-        run: yarn test
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: test-results.xml
