@@ -2,15 +2,19 @@ import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { createMock } from '@golevelup/ts-jest';
-import { AuthDTO } from './dto';
 import { ForbiddenException } from '@nestjs/common';
-import * as argon from 'argon2';
-import { PrismaConnectionService } from '../prisma-connection/prisma-connection.service';
 import { UserResult } from './constants';
+import { AuthDTO } from './dto';
+import * as argon from 'argon2';
+import { JwtService } from '@nestjs/jwt';
+import { PrismaConnectionService } from '../prisma-connection/prisma-connection.service';
+import { ConfigService } from '@nestjs/config';
 
 describe('AuthService', () => {
   let service: AuthService;
   let prismaService: PrismaConnectionService;
+  let jwtService: JwtService;
+  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,6 +35,8 @@ describe('AuthService', () => {
       .compile();
 
     service = module.get<AuthService>(AuthService);
+    jwtService = module.get<JwtService>(JwtService);
+    configService = module.get<ConfigService>(ConfigService);
     prismaService = module.get<PrismaConnectionService>(PrismaConnectionService);
   });
 
@@ -42,17 +48,13 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('signUp function', () => {
+  describe('signUp', () => {
     let mockInput: AuthDTO;
     beforeEach(() => {
       mockInput = {
         email: faker.internet.email(),
         password: faker.internet.password(),
       };
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
     });
 
     it('should call the signUp function', () => {
@@ -87,7 +89,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('signIn Function', () => {
+  describe('signIn', () => {
     let mockInput: AuthDTO;
     let mockResult: UserResult;
     beforeEach(() => {
@@ -106,18 +108,16 @@ describe('AuthService', () => {
       };
     });
 
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
     it('should successfully sign in a user and return a token', async () => {
       // Arrange
       const token = faker.internet.jwt();
       jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockResult);
       jest.spyOn(argon, 'verify').mockResolvedValue(true);
       jest.spyOn(service, 'generateToken').mockResolvedValue({ access_token: token });
+
       // Act
       const result = await service.signIn(mockInput);
+
       // Assert
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: mockInput.email },
@@ -130,6 +130,7 @@ describe('AuthService', () => {
     it('should throw ForbiddenException if the user is not found', async () => {
       // Arrange
       jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+
       // Act & Assert
       await expect(service.signIn(mockInput)).rejects.toThrow(ForbiddenException);
       await expect(service.signIn(mockInput)).rejects.toThrow('Credentials are incorrect');
@@ -139,6 +140,7 @@ describe('AuthService', () => {
       // Arrange
       jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockResult);
       jest.spyOn(argon, 'verify').mockResolvedValue(false);
+
       // Act & Assert
       await expect(service.signIn(mockInput)).rejects.toThrow(ForbiddenException);
       await expect(service.signIn(mockInput)).rejects.toThrow('Credentials are incorrect');
@@ -147,9 +149,64 @@ describe('AuthService', () => {
     it('should rethrow any unexpected errors from the database', async () => {
       // Arrange
       jest.spyOn(prismaService.user, 'findUnique').mockRejectedValue(new Error('Unexpected error'));
+
       // Act & Assert
       await expect(service.signIn(mockInput)).rejects.toThrow(Error);
       await expect(service.signIn(mockInput)).rejects.toThrow('Unexpected error');
+    });
+  });
+
+  describe('generateToken', () => {
+    let mockInput: { userId: any; email: any };
+    const token = faker.internet.jwt();
+    const jwtSecret = faker.string;
+    beforeEach(() => {
+      mockInput = {
+        userId: faker.number.int(10),
+        email: faker.internet.email(),
+      };
+    });
+
+    it('should call the function with required params', async () => {
+      // Arrange
+      const mockFunction = jest.spyOn(service, 'generateToken');
+
+      // Act
+      await service.generateToken(mockInput.userId, mockInput.email);
+
+      // Assert
+      expect(mockFunction).toHaveBeenCalledWith(mockInput.userId, mockInput.email);
+    });
+
+    it('should generate a token with the correct payload and return it', async () => {
+      // Arrange
+      jest.spyOn(configService, 'get').mockReturnValue(jwtSecret);
+      jest.spyOn(jwtService, 'signAsync').mockResolvedValue(token);
+
+      // Act
+      const result = await service.generateToken(mockInput.userId, mockInput.email);
+
+      // Assert
+      expect(configService.get).toHaveBeenCalledWith('JWT_SECRET');
+      expect(jwtService.signAsync).toHaveBeenCalledWith(
+        { sub: mockInput.userId, email: mockInput.email },
+        { expiresIn: '15m', secret: jwtSecret }
+      );
+      expect(result).toEqual({ access_token: token });
+    });
+
+    it('should throw an error if JwtService throws', () => {
+      // Arrange
+      const jwtSecret = faker.string;
+
+      jest.spyOn(configService, 'get').mockReturnValue(jwtSecret);
+      jest.spyOn(jwtService, 'signAsync').mockRejectedValue(new Error('JWT Error'));
+
+      // Act
+      const result = service.generateToken(mockInput.userId, mockInput.email);
+
+      // Assert
+      expect(result).rejects.toThrow('JWT Error');
     });
   });
 });
