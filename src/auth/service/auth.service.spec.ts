@@ -3,11 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { createMock } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
-import { UserResult } from './constants';
-import { AuthDTO } from './dto';
+import { UserResult } from '../constants';
+import { AuthDTO } from '../dto';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaConnectionService } from '../prisma-connection/prisma-connection.service';
+import { PrismaConnectionService } from '../../prisma-connection/prisma-connection.service';
 import { ConfigService } from '@nestjs/config';
 
 describe('AuthService', () => {
