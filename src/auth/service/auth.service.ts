@@ -5,16 +5,19 @@ import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { AppLoggerService } from '../../logger/logger.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prismaService: PrismaConnectionService,
-    private jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly logger: AppLoggerService,
+    private jwtService: JwtService
   ) {}
 
   async signUp(create: AuthDTO) {
+    this.logger.log(`calling ${this.signUp.name} from the auth Service`);
     const hashPassword = await argon.hash(create.password);
     try {
       const user = await this.prismaService.user.create({
@@ -45,6 +48,7 @@ export class AuthService {
   }
 
   async signIn(input: AuthDTO) {
+    this.logger.log(`calling ${this.signIn.name} from the auth Service`);
     const user = await this.prismaService.user.findUnique({
       where: { email: input.email },
     });
@@ -57,6 +61,7 @@ export class AuthService {
   }
 
   async generateToken(userId: number, email: string): Promise<{ access_token: string }> {
+    this.logger.log(`calling ${this.generateToken.name} from the auth Service`);
     const payload = {
       sub: userId,
       email,

@@ -4,20 +4,24 @@ import { JwtService } from '@nestjs/jwt';
 import { UserOutput } from '../interfaces';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaConnectionService } from '../prisma-connection/prisma-connection.service';
+import { AppLoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prismaService: PrismaConnectionService,
     private readonly configService: ConfigService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly logger: AppLoggerService
   ) {}
 
   async getInfoFromToken(token: string): Promise<UserOutput> {
+    this.logger.log(`calling ${this.getInfoFromToken.name} from the User Service`);
     if (token) {
       try {
         const secret = this.configService.get('JWT_SECRET');
         const decoded = await this.jwtService.verifyAsync(token, { secret });
+        this.logger.log(`verifying the token with our secret key`);
         const user = await this.prismaService.user.findUniqueOrThrow({
           where: { email: decoded.email },
           select: {
@@ -39,6 +43,7 @@ export class UserService {
         throw error;
       }
     }
+    this.logger.log(`nothing is working fine, and don't get anything`);
     return {} as UserOutput;
   }
 }
