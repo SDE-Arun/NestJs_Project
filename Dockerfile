@@ -10,7 +10,7 @@ COPY package*.json ./
 # Copy yarn.lock file ensures that the exact versions of the dependencies specified in it are installed
 COPY yarn.lock ./
 
-# Copy prisma file to here to run our below prisma generate file 
+# Copy prisma here to run our below prisma generate file 
 COPY prisma ./prisma
 
 # This will make sure that the dependencies installed exactly 

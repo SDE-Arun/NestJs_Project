@@ -21,15 +21,19 @@ export class AuthService {
         data: {
           email: create.email,
           hash: hashPassword,
+          firstName: create.firstName,
+          LastName: create.lastName,
         },
         //* we are only getting these below things in the output after success
         select: {
           id: true,
           email: true,
+          firstName: true,
+          LastName: true,
           createdAt: true,
         },
       });
-      return this.generateToken(user.id, user.email);
+      return this.generateToken(user.id, user.email, user.firstName ?? '', user.LastName ?? '');
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -49,13 +53,20 @@ export class AuthService {
     const isPasswordMatch = await argon.verify(user.hash, input.password);
     if (!isPasswordMatch) throw new ForbiddenException('Credentials are incorrect');
 
-    return this.generateToken(user.id, user.email);
+    return this.generateToken(user.id, user.email, user.firstName ?? '', user.LastName ?? '');
   }
 
-  async generateToken(userId: number, email: string): Promise<{ access_token: string }> {
+  async generateToken(
+    userId: number,
+    email: string,
+    firstName: string,
+    lastName: string
+  ): Promise<{ access_token: string }> {
     const payload = {
       sub: userId,
       email,
+      firstName,
+      lastName,
     };
     const token = await this.jwtService.signAsync(payload, {
       expiresIn: '15m',

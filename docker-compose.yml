@@ -13,9 +13,13 @@ services:
       - prismadata:/var/lib/postgresql/data
 
   app:
+    restart: always
+    container_name: main
+    image: nestjs-project-app:latest # this will overwrite the existing image, if image was there
     build: 
       context: .
       dockerfile: Dockerfile
+    command: yarn start:dev
     ports:
       - 3000:3000
     env_file:
