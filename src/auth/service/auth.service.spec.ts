@@ -127,12 +127,7 @@ describe('AuthService', () => {
         where: { email: mockInput.email },
       });
       expect(argon.verify).toHaveBeenCalledWith(mockResult.hash, mockInput.password);
-      expect(service.generateToken).toHaveBeenCalledWith(
-        mockResult.id,
-        mockResult.email,
-        mockResult.firstName,
-        mockResult.LastName
-      );
+      expect(service.generateToken).toHaveBeenCalledWith(mockResult.id, mockResult.email);
       expect(result).toEqual({ access_token: token });
     });
 
@@ -166,15 +161,13 @@ describe('AuthService', () => {
   });
 
   describe('generateToken', () => {
-    let mockInput: { userId: number; email: string; firstName: string; lastName: string };
+    let mockInput: { userId: number; email: string };
     const token = faker.internet.jwt();
     const jwtSecret = faker.string;
     beforeEach(() => {
       mockInput = {
         userId: faker.number.int(10),
         email: faker.internet.email(),
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
       };
     });
 
@@ -183,15 +176,10 @@ describe('AuthService', () => {
       const mockFunction = jest.spyOn(service, 'generateToken');
 
       // Act
-      await service.generateToken(mockInput.userId, mockInput.email, mockInput.firstName, mockInput.lastName);
+      await service.generateToken(mockInput.userId, mockInput.email);
 
       // Assert
-      expect(mockFunction).toHaveBeenCalledWith(
-        mockInput.userId,
-        mockInput.email,
-        mockInput.firstName,
-        mockInput.lastName
-      );
+      expect(mockFunction).toHaveBeenCalledWith(mockInput.userId, mockInput.email);
     });
 
     it('should generate a token with the correct payload and return it', async () => {
@@ -200,17 +188,12 @@ describe('AuthService', () => {
       jest.spyOn(jwtService, 'signAsync').mockResolvedValue(token);
 
       // Act
-      const result = await service.generateToken(
-        mockInput.userId,
-        mockInput.email,
-        mockInput.firstName,
-        mockInput.lastName
-      );
+      const result = await service.generateToken(mockInput.userId, mockInput.email);
 
       // Assert
       expect(configService.get).toHaveBeenCalledWith('JWT_SECRET');
       expect(jwtService.signAsync).toHaveBeenCalledWith(
-        { sub: mockInput.userId, email: mockInput.email, firstName: mockInput.firstName, lastName: mockInput.lastName },
+        { sub: mockInput.userId, email: mockInput.email },
         { expiresIn: '15m', secret: jwtSecret }
       );
       expect(result).toEqual({ access_token: token });
@@ -224,7 +207,7 @@ describe('AuthService', () => {
       jest.spyOn(jwtService, 'signAsync').mockRejectedValue(new Error('JWT Error'));
 
       // Act
-      const result = service.generateToken(mockInput.userId, mockInput.email, mockInput.firstName, mockInput.lastName);
+      const result = service.generateToken(mockInput.userId, mockInput.email);
 
       // Assert
       expect(result).rejects.toThrow('JWT Error');

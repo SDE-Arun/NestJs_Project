@@ -3,10 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserOutput } from '../interfaces';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaConnectionService } from '../prisma-connection/prisma-connection.service';
 
 @Injectable()
 export class UserService {
   constructor(
+    private readonly prismaService: PrismaConnectionService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService
   ) {}
@@ -16,11 +18,22 @@ export class UserService {
       try {
         const secret = this.configService.get('JWT_SECRET');
         const decoded = await this.jwtService.verifyAsync(token, { secret });
-        return decoded;
+        const user = await this.prismaService.user.findUniqueOrThrow({
+          where: { email: decoded.email },
+          select: {
+            id: true,
+            firstName: true,
+            LastName: true,
+            email: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        });
+        return user as unknown as UserOutput;
       } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
-          if (error.code === 'P2002') {
-            throw new ForbiddenException('credentials taken');
+          if (error.code === 'P2025') {
+            throw new ForbiddenException('Credentials are incorrect');
           }
         }
         throw error;

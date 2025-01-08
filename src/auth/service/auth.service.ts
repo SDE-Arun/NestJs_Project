@@ -33,7 +33,7 @@ export class AuthService {
           createdAt: true,
         },
       });
-      return this.generateToken(user.id, user.email, user.firstName ?? '', user.LastName ?? '');
+      return this.generateToken(user.id, user.email);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -53,20 +53,13 @@ export class AuthService {
     const isPasswordMatch = await argon.verify(user.hash, input.password);
     if (!isPasswordMatch) throw new ForbiddenException('Credentials are incorrect');
 
-    return this.generateToken(user.id, user.email, user.firstName ?? '', user.LastName ?? '');
+    return this.generateToken(user.id, user.email);
   }
 
-  async generateToken(
-    userId: number,
-    email: string,
-    firstName: string,
-    lastName: string
-  ): Promise<{ access_token: string }> {
+  async generateToken(userId: number, email: string): Promise<{ access_token: string }> {
     const payload = {
       sub: userId,
       email,
-      firstName,
-      lastName,
     };
     const token = await this.jwtService.signAsync(payload, {
       expiresIn: '15m',
