@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { createMock } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { UserResult } from '../constants';
-import { AuthDTO } from '../dto';
+import { AuthInputDTO } from '../dto';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaConnectionService } from '../../prisma-connection/prisma-connection.service';
@@ -49,7 +49,7 @@ describe('AuthService', () => {
   });
 
   describe('signUp', () => {
-    let mockInput: AuthDTO;
+    let mockInput: AuthInputDTO;
     beforeEach(() => {
       mockInput = {
         email: faker.internet.email(),
@@ -92,7 +92,7 @@ describe('AuthService', () => {
   });
 
   describe('signIn', () => {
-    let mockInput: AuthDTO;
+    let mockInput: AuthInputDTO;
     let mockResult: UserResult;
     beforeEach(() => {
       mockInput = {

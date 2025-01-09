@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from '../service/auth.service';
-import { AuthDTO } from '../dto';
+import { AuthInputDTO } from '../dto';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -25,7 +25,7 @@ describe('AuthController', () => {
   });
 
   describe('signUp', () => {
-    let createInput: AuthDTO;
+    let createInput: AuthInputDTO;
     beforeEach(() => {
       createInput = {
         email: faker.internet.email(),
@@ -65,7 +65,7 @@ describe('AuthController', () => {
   });
 
   describe('signIn', () => {
-    let createInput: AuthDTO;
+    let createInput: AuthInputDTO;
     beforeEach(() => {
       createInput = {
         email: faker.internet.email(),
