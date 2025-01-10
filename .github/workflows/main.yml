@@ -11,8 +11,8 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build Application
+  build-and-test:
+    name: Build and Test Application
     runs-on: ubuntu-22.04
     steps:
         # Checkout Code
@@ -37,58 +37,11 @@ jobs:
       - name: Inject Environment Variables
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL}}" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env       
-      
-  test_unit: 
-    name: Unit Test Cases
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.11.1
-
-      - name: Install Dependencies
-        run: yarn install
-
-      - name: Build Application
-        run: yarn build
-
-      - name: Inject Environment Variables
-        run: |
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL}}" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env       
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env           
 
       # Run Unit Test Cases
       - name: Run Unit Tests
-        run: yarn test
-
-  test_e2e: 
-    name: e2e Test Cases
-    runs-on: ubuntu-22.04
-    needs: build  # Ensure that tests run after the build
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.11.1
-
-      - name: Install Dependencies
-        run: yarn install
-
-      - name: Build Application
-        run: yarn build
-
-      - name: Inject Environment Variables
-        run: |
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL}}" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env       
+        run: yarn test     
 
       # Run End-to-End (E2E) Tests
       - name: Run E2E Tests
