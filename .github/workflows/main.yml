@@ -28,16 +28,19 @@ jobs:
         # Install Dependencies
       - name: Install Dependencies
         run: yarn install
+        working-directory: ./
 
         # Build the Application
       - name: Build Application
         run: yarn build
+        working-directory: ./
 
         # Inject Environment Variables securely
       - name: Inject Environment Variables
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL}}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env       
+        working-directory: ./
       
   test_unit: 
     name: Unit Test Cases
