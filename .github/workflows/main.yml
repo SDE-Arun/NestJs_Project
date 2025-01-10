@@ -47,15 +47,17 @@ jobs:
       # Run Unit Test Cases
       - name: Run Unit Tests
         run: yarn test
+        working-directory: ./
 
   test_e2e: 
-    name: Unit Test Cases
+    name: e2e Test Cases
     runs-on: ubuntu-22.04
     needs: build  # Ensure that tests run after the build
     steps:
       # Run End-to-End (E2E) Tests
       - name: Run E2E Tests
         run: yarn test:e2e
+        working-directory: ./
 
         # Upload Build Artifacts (Ensure dist/ exists)
       - name: Upload Build Artifacts
