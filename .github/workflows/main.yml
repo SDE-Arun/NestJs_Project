@@ -45,3 +45,40 @@ jobs:
         with:
           name: build-artifacts
           path: dist/
+
+  docker-build:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Step 1: Check out the code from the repository
+      - name: Checkout
+        uses: actions/checkout@v4  # Checks out the repository for the workflow
+
+      # Step 2: Extract Docker image metadata (tags, annotations) based on repository information
+      - name: Extract Docker image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME || 'cannot find the docker username'}}/  # Specify the Docker image name format
+
+      # Step 3: Log in to Docker Hub using the Docker credentials stored in GitHub secrets
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3  # Log in to Docker Hub
+        with:
+          username: ${{ secrets.DOCKER_USERNAME || 'cannot find the docker username'}}  # Docker Hub username
+          password: ${{ secrets.DOCKER_PASSWORD || 'cannot find the docker password'}}  # Docker Hub password (stored in GitHub Secrets)
+
+      # Step 4: Set up Docker Buildx for building and pushing multi-platform Docker images
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3  # Prepare the Buildx builder for the Docker build process
+
+      # Step 5: Build and push the Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6  # Build and push the image to Docker Hub
+        with:
+          push: ${{ github.event_name != 'pull_request' }}  # Only push on non-pull-request events (e.g., push to main branch)
+          tags: ${{ steps.meta.outputs.tags }}  # Use the extracted tags for the Docker image
+          annotations: ${{ steps.meta.outputs.annotations }}  # Optional: Add metadata annotations for the image
+          provenance: true  # Enable build provenance to record build metadata
+          sbom: true  # Enable Software Bill of Materials (SBOM) generation for security/compliance
