@@ -1,5 +1,19 @@
-node_modules
 .git
 *.log
 *.md
 *.test.js
+
+# Ignore environment variables
+.env
+
+# Ignore configuration files
+config/*.yml
+
+# Ignore sensitive credentials
+secrets/
+
+# Ignore node_modules to avoid redundancy if using multi-stage builds
+node_modules/
+
+# Ignore logs
+logs/

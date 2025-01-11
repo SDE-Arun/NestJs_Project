@@ -11,36 +11,72 @@ on:
       - main
 
 jobs:
-  build-and-test:
-    name: Build and Test Application
+  build-app:
+    name: Build Application
     runs-on: ubuntu-22.04
     steps:
-        # Step 1: Checkout Code
+        # Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v4
-        # Step 2: Set up Node.js
+        # Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20.11.1
-        # Step 3: Install Dependencies
+        # Install Dependencies
       - name: Install Dependencies
         run: yarn install
-        # Step 4: Build the Application
+        # Build the Application
       - name: Build Application
         run: yarn build
-        # Step 5: Inject Environment Variables
+        # Inject Environment Variables securely
       - name: Inject Environment Variables
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL || 'cannot find the db_url' }}" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET || 'cannot find the jwt_secret'}}" >> .env        # Step 6: Run Unit Tests
-      - name: Run Unit Tests
-        run: yarn test
-        # Step 7: Run End-to-End (E2E) Tests
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET || 'cannot find the jwt_secret'}}" >> .env       
+        # Run End-to-End (E2E) Tests
       - name: Run E2E Tests
         run: yarn test:e2e
+        # Upload Build Artifacts (Ensure dist/ exists)
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: dist/
+
+  test_unit: 
+    needs: build-app  
+    name: Unit Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+      - name: Install Dependencies
+        run: yarn install
+      # Run Unit Test Cases
+      - name: Run Unit Tests
+        run: yarn test
+
+  # test_e2e: 
+  #   needs: build-app
+  #   name: End-to-End Tests
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20.11.1
+  #     - name: Install Dependencies
+  #       run: yarn install
+  #     - name: Inject Environment Variables
+  #       run: |
+  #         echo "DATABASE_URL=${{ secrets.DATABASE_URL || 'cannot find the db_url' }}" >> .env
+  #     # Run End-to-End (E2E) Tests
+  #     - name: Run E2E Tests
+  #       run: yarn test:e2e

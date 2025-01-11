@@ -18,10 +18,11 @@ COPY prisma ./prisma
 RUN yarn install --frozen-lockfile
 
 # To generate the prisma Client
-RUN npx prisma generate --schema=prisma/schema.prisma
+RUN npx prisma generate
 
-# Copy the rest of the application code to the working directory
-COPY . .
+# Copy only the specific part of application code to the working directory
+COPY tsconfig.json ./
+COPY src/ /app/src/
 
 # Building the NestJs application
 RUN yarn build
