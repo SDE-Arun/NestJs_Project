@@ -71,6 +71,9 @@ jobs:
           node-version: 20.11.1
       - name: Install Dependencies
         run: yarn install
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
       # Run End-to-End (E2E) Tests
       - name: Run E2E Tests
         run: yarn test:e2e
