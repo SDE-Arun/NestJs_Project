@@ -1,0 +1,25 @@
+name: Build and Publish Image to Docker Hub
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - './Dockerfile'
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - './Dockerfile'
+
+jobs:
+  publish_images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        
+      - name: Build the Docker image
+        run: docker build . -t ${{secrets.DOCKERHUB_USERNAME}}/nestjs-project-app:$(date +%s)
+      - name: push image to Docker Hub
+        run: |
+          docker login -u ${{secrets.DOCKERHUB_USERNAME}} -p ${{secrets.DOCKERHUB_TOKEN}}
+          docker push ${{secrets.DOCKERHUB_USERNAME}}/nestjs-project-app:$(date +%s)
+
