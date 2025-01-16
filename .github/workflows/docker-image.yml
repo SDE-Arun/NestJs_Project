@@ -1,11 +1,13 @@
 name: Build and Publish Image to Docker Hub
 on:
+  workflow_run:
+    workflows:
+      - CI/CD for NestJs_Project
+    types:
+      - completed
   push:
-    branches: [ "master" ]
-    paths:
-      - './Dockerfile'
-  pull_request:
-    branches: [ "master" ]
+    branches: 
+      - master
     paths:
       - './Dockerfile'
 
