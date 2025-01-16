@@ -1,7 +1,7 @@
 # Using node.js as base image
 FROM node:20.11.1 AS base
 
-# Setting working directory inside our container
+# Setting up working directory inside our container
 WORKDIR /app
 
 # Copy package.json and package-lock.json to the working directory
