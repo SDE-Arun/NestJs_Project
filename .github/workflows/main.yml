@@ -1,6 +1,12 @@
 name: CI/CD for NestJs_Project
 
 on:
+  workflow_run:
+    workflows:
+      # first the postgres-container.yml file will run that will start the container to test-e2e
+      - Run Database Container For e2e-test cases
+    types:
+      - completed
   push:
     branches:
       - master
