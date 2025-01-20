@@ -27,15 +27,25 @@ jobs:
           POSTGRES_PASSWORD: testpass
           POSTGRES_DB: test_db
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    env: # Set environment variables
+      DATABASE_URL: postgres://testuser:testpass@localhost:5432/test_db
 
-      - name: Wait for Postgres to be ready
-        run: |
-          echo "Waiting for Postgres to be ready..."
-          until pg_isready -h localhost -p 5434 -U testuser; do
-            sleep 1
-          done
-          echo "Postgres is ready! But no further actions are taken."
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+
+      - name: Run end-to-end tests
+        run: yarn test:e2e
+
 
