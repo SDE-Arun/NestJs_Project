@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
-      - master
   pull_request:
     branches:
       - main
-      - master
 
 jobs:
   start-container:
@@ -23,15 +21,20 @@ jobs:
         ports:
           - 5434:5432
         options: >-
-          --health-cmd="pg_isready -U dummy_user"
+          --health-cmd="pg_isready -U $${secrets.DB_USER_TEST}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Wait for Container Health Check
+      - name: Wait for Postgres to be ready
         run: |
-          echo "Postgres container is up and running. Doing nothing else..."
+          echo "Waiting for Postgres to be ready..."
+          until pg_isready -h localhost -p 5434 -U testuser; do
+            sleep 1
+          done
+          echo "Postgres is ready! But no further actions are taken."
+
