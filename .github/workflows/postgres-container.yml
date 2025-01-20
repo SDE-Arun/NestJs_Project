@@ -27,8 +27,8 @@ jobs:
           POSTGRES_PASSWORD: testpass
           POSTGRES_DB: test_db
 
-    # env: # Set environment variables
-    #   DATABASE_URL: postgres://testuser:testpass@localhost:5432/test_db
+    env: # Set environment variables
+      DATABASE_URL: postgres://testuser:testpass@localhost:5432/test_db
 
     steps:
       - name: Checkout code
@@ -49,8 +49,8 @@ jobs:
               exit 1
             fi
   
-  #     - name: Run database migrations
-  #       run: npx prisma migrate deploy
+      - name: Run database migrations
+        run: npx prisma migrate deploy
 
   # run-e2e-tests:
   #   runs-on: ubuntu-latest

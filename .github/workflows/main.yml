@@ -1,12 +1,12 @@
 name: CI/CD for NestJs_Project
 
 on:
-  # workflow_run:
-  #   workflows:
-  #     # first the postgres-container.yml file will run that will start the container to test-e2e
-  #     - Run Database Container For e2e-test cases
-  #   types:
-  #     - completed
+  workflow_run:
+    workflows:
+      # first the postgres-container.yml file will run that will start the container to test-e2e
+      - Run Database Container For e2e-test cases
+    types:
+      - completed
   push:
     branches:
       - master
@@ -41,10 +41,9 @@ jobs:
           echo "DATABASE_URL=${{ secrets.DATABASE_URL || 'cannot find the db_url' }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET || 'cannot find the jwt_secret'}}" >> .env       
         
-          # Run End-to-End (E2E) Tests
-        #! MOVED TO SEPERATE YAML FILE
-        # - name: Run E2E Tests
-        #   run: yarn test:e2e
+        # Run End-to-End (E2E) Tests
+      - name: Run E2E Tests
+        run: yarn test:e2e
         
         # Upload Build Artifacts (Ensure dist/ exists)
       - name: Upload Build Artifacts
