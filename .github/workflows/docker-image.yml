@@ -5,6 +5,8 @@ on:
       - CI/CD for NestJs_Project
     types:
       - completed
+    branches: 
+      - master # this resolver conflict b/w workflow_run and push
   push:
     branches: 
       - master
