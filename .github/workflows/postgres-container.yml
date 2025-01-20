@@ -42,6 +42,13 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -p 5432 -U testuser; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 2
+          done
+
       - name: Run database migrations
         run: npx prisma migrate deploy
 
