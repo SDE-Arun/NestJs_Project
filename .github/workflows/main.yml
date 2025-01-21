@@ -85,7 +85,9 @@ jobs:
         run: yarn install
       - name: Inject Environment Variables
         run: |
-          echo "DATABASE_URL: postgresql://postgres:123@postgres:5432/nest" >> .env
+          echo "DATABASE_URL: postgresql://${{secrets.DB_USER_TEST}}:${{secrets.DB_PASSWORD_TEST}}@localhost:5432/nest" >> .env
       # Run End-to-End (E2E) Tests
       - name: Run E2E Tests
+        env:
+          DATABASE_URL: postgresql://${{secrets.DB_USER_TEST}}:${{secrets.DB_PASSWORD_TEST}}@localhost:5432/nest
         run: yarn test:e2e
