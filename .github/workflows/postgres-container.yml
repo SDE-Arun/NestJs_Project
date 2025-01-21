@@ -57,7 +57,7 @@ jobs:
             fi  
   
       - name: Run database migrations
-        run: npx prisma migrate deploy
+        run: npx prisma migrate dev --preview-feature
 
   # run-e2e-tests:
   #   runs-on: ubuntu-latest
