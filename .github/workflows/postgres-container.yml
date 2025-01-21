@@ -15,20 +15,20 @@ jobs:
       postgres:
         image: postgres:latest
         ports:
-          - 5434:5432
+          - 5432:5432
         options: >-
           --name prisma-test-db
-          --health-cmd "pg_isready -U testuser -h localhost -p 5432"
+          --health-cmd "pg_isready -U $${secrets.DB_USER_TEST} -h localhost -p 5432"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
         env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: test_db
+          POSTGRES_USER: ${{secrets.DB_USER_TEST}}
+          POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD_TEST}}
+          POSTGRES_DB: ${{secrets.DB_NAME_TEST}}
 
     env: # Set environment variables
-      DATABASE_URL: postgres://testuser:testpass@localhost:5432/test_db
+      DATABASE_URL: postgres://${{secrets.DB_USER_TEST}}:${{secrets.DB_PASSWORD_TEST}}@localhost:5432/${{secrets.DB_NAME_TEST}}
 
     steps:
       - name: Checkout code
