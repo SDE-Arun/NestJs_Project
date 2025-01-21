@@ -18,7 +18,7 @@ jobs:
           - 5432:5432
         options: >-
           --name prisma-test-db
-          --health-cmd "pg_isready -U postgres -h localhost -p 5432"
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -28,7 +28,7 @@ jobs:
           POSTGRES_DB: nest
 
     env: # Set environment variables
-      DATABASE_URL: postgres://postgres:123@localhost:5432/nest
+      DATABASE_URL: postgresql://postgres:123@postgres:5432/nest
 
     steps:
       - name: Checkout code
@@ -48,6 +48,12 @@ jobs:
               echo "PostgreSQL did not become ready in time"
               exit 1
             fi
+
+      - name: Inject Environment Variables --> for checking
+        run: |
+            echo "DB_NAME_TEST=${{ secrets.DB_NAME_TEST || 'cannot find the db_name' }}" >> .env
+            echo "DB_PASSWORD_TEST=${{ secrets.DB_PASSWORD_TEST || 'cannot find the db_password'}}" >> .env     
+            echo "DB_USER_TEST=${{ secrets.DB_USER_TEST || 'cannot find the db_user'}}" >> .env     
   
       - name: Run database migrations
         run: npx prisma migrate deploy

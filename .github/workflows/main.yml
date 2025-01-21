@@ -2,9 +2,8 @@ name: CI/CD for NestJs_Project
 
 on:
   workflow_run:
-    workflows:
-      # first the postgres-container.yml file will run that will start the container to test-e2e
-      - Run Database Container For e2e-test cases
+    # first the postgres-container.yml file will run that will start the container to test-e2e
+    workflows: [Run Database Container For e2e-test cases]
     types:
       - completed
   push:
@@ -41,12 +40,11 @@ jobs:
           echo "DATABASE_URL=${{ secrets.DATABASE_URL || 'cannot find the db_url' }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET || 'cannot find the jwt_secret'}}" >> .env       
     
-        # Run End-to-End (E2E) Tests
-      - name: Run E2E Tests
-        env: # Set environment variables
-          DATABASE_URL: postgres://postgres:123@localhost:5432/nest
-          # DATABASE_URL: postgres://${{secrets.DB_USER_TEST}}:${{secrets.DB_PASSWORD_TEST}}@localhost:5432/${{secrets.DB_NAME_TEST}}
-        run: yarn test:e2e
+        #! Run End-to-End (E2E) Tests, Doing this seperately in the end
+      # - name: Run E2E Tests
+      #   env: # Set environment variables
+      #     DATABASE_URL: postgresql://postgres:123@postgres:5432/nest
+      #   run: yarn test:e2e
         
         # Upload Build Artifacts (Ensure dist/ exists)
       - name: Upload Build Artifacts
@@ -72,22 +70,22 @@ jobs:
       - name: Run Unit Tests
         run: yarn test
 
-  # test_e2e: 
-  #   needs: build-app
-  #   name: End-to-End Tests
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
-  #     - name: Set up Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 20.11.1
-  #     - name: Install Dependencies
-  #       run: yarn install
-  #     - name: Inject Environment Variables
-  #       run: |
-  #         echo "DATABASE_URL=${{ secrets.DATABASE_URL || 'cannot find the db_url' }}" >> .env
-  #     # Run End-to-End (E2E) Tests
-  #     - name: Run E2E Tests
-  #       run: yarn test:e2e
+  test_e2e: 
+    needs: build-app
+    name: End-to-End Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+      - name: Install Dependencies
+        run: yarn install
+      - name: Inject Environment Variables
+        run: |
+          echo "DATABASE_URL: postgresql://postgres:123@postgres:5432/nest" >> .env
+      # Run End-to-End (E2E) Tests
+      - name: Run E2E Tests
+        run: yarn test:e2e
