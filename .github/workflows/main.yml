@@ -40,9 +40,12 @@ jobs:
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL || 'cannot find the db_url' }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET || 'cannot find the jwt_secret'}}" >> .env       
-        
+    
         # Run End-to-End (E2E) Tests
       - name: Run E2E Tests
+        env: # Set environment variables
+          DATABASE_URL: postgres://postgres:123@localhost:5432/nest
+          # DATABASE_URL: postgres://${{secrets.DB_USER_TEST}}:${{secrets.DB_PASSWORD_TEST}}@localhost:5432/${{secrets.DB_NAME_TEST}}
         run: yarn test:e2e
         
         # Upload Build Artifacts (Ensure dist/ exists)
