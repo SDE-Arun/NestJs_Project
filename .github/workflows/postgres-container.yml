@@ -41,6 +41,9 @@ jobs:
           echo "DB_PASSWORD_TEST=${{ secrets.DB_PASSWORD_TEST || 'cannot find the db_password'}}" >> .env     
           echo "DB_NAME_TEST=${{ secrets.DB_NAME_TEST || 'cannot find the db_name' }}" >> .env
 
+      - name: Run database migrations
+        run: npx prisma migrate dev --preview-feature
+
       - name: Wait for PostgreSQL to be ready
         run: |
             MAX_RETRIES=10
@@ -56,8 +59,6 @@ jobs:
               exit 1
             fi  
   
-      - name: Run database migrations
-        run: npx prisma migrate dev --preview-feature
 
   # run-e2e-tests:
   #   runs-on: ubuntu-latest
