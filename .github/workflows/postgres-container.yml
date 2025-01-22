@@ -32,26 +32,23 @@ jobs:
           POSTGRES_HOST: postgres #! in place of ** localhost ** This must the name of container
 
     env: # Set environment variables
-      DATABASE_URL: postgresql://${{secrets.DB_USER_TEST}}:${{secrets.DB_PASSWORD_TEST}}@postgres:5432/nest
+      DATABASE_URL: postgresql://${{secrets.DB_USER_TEST}}:${{secrets.DB_PASSWORD_TEST}}@postgres:5434/nest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Inject Environment Variables --> for checking
-        run: |
-          echo "DB_USER_TEST=${{ secrets.DB_USER_TEST || 'cannot find the db_user'}}" >> .env   
-          echo "DB_PASSWORD_TEST=${{ secrets.DB_PASSWORD_TEST || 'cannot find the db_password'}}" >> .env     
-          echo "DB_NAME_TEST=${{ secrets.DB_NAME_TEST || 'cannot find the db_name' }}" >> .env
-
-      - name: Run database migrations
-        run: npx prisma migrate dev --preview-feature
+      # - name: Inject Environment Variables --> for checking
+      #   run: |
+      #     echo "DB_USER_TEST=${{ secrets.DB_USER_TEST || 'cannot find the db_user'}}" >> .env   
+      #     echo "DB_PASSWORD_TEST=${{ secrets.DB_PASSWORD_TEST || 'cannot find the db_password'}}" >> .env     
+      #     echo "DB_NAME_TEST=${{ secrets.DB_NAME_TEST || 'cannot find the db_name' }}" >> .env
 
       - name: Wait for PostgreSQL to be ready
         run: |
             MAX_RETRIES=10
             RETRY_COUNT=0
-            until pg_isready -h postgres -p 5432 -U postgres || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
+            until pg_isready -h postgres -p 5434 -U postgres || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
               echo "Waiting for PostgreSQL to be ready..."
               sleep 2
               RETRY_COUNT=$((RETRY_COUNT+1))
@@ -61,6 +58,9 @@ jobs:
               echo "PostgreSQL did not become ready in time"
               exit 1
             fi  
+
+      - name: Run database migrations
+        run: npx prisma migrate dev --preview-feature
   
 
   run-e2e-tests:
@@ -77,5 +77,3 @@ jobs:
 
       - name: Run end-to-end tests
         run: yarn test:e2e
-
-
