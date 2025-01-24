@@ -42,7 +42,7 @@ export class AuthService {
       this.logger.error(`we are in error section, and getting this error ${error}`);
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new ForbiddenException('credentials taken');
+          throw new ForbiddenException('user with these credentials are already in db');
         }
       }
       throw error;
