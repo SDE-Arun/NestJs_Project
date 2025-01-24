@@ -1,11 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, MaxLength, MinLength } from 'class-validator';
 
 export class AuthInputDTO {
   @ApiProperty({
     description: 'email of the user',
-    type: String,
+    example: 'user@example.com',
+    required: true,
   })
+  @IsEmail({}, { message: 'Invalid email format' })
   @MinLength(10)
   @MaxLength(30)
   readonly email: string;
@@ -13,6 +15,7 @@ export class AuthInputDTO {
   @ApiProperty({
     description: 'password given by user',
     type: String,
+    required: true,
   })
   @MinLength(5)
   @MaxLength(30)

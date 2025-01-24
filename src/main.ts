@@ -31,7 +31,15 @@ async function bootstrap() {
   SwaggerModule.setup('swagger', app, document);
 
   //* here whitelist: true, showing that nothing will come with request other than our DTO
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, //* Removes unwanted properties
+      //* It is not necessary to do this, we can use JOI and extend the PipeTransform class for validation
+      forbidNonWhitelisted: true, //* Throws an error for unwanted properties
+      transform: true, //* Automatically transforms payloads to match DTO types
+      // disableErrorMessages:true, //! make it false for development env, but it is good for production env
+    })
+  );
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

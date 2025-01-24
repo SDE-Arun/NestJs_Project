@@ -21,7 +21,7 @@ export class UserService {
       try {
         const secret = this.configService.get('JWT_SECRET');
         const decoded = await this.jwtService.verifyAsync(token, { secret });
-        this.logger.log(`verifying the token with our secret key`);
+        this.logger.log(`verifying the token with our secret key ..... `);
         const user = await this.prismaService.user.findUniqueOrThrow({
           where: { email: decoded.email },
           select: {
@@ -35,6 +35,7 @@ export class UserService {
         });
         return user as unknown as UserOutput;
       } catch (error) {
+        this.logger.error(`we are in error section, we are getting this error ${error}`);
         if (error instanceof PrismaClientKnownRequestError) {
           if (error.code === 'P2025') {
             throw new ForbiddenException('Credentials are incorrect');
@@ -43,7 +44,7 @@ export class UserService {
         throw error;
       }
     }
-    this.logger.log(`nothing is working fine, and don't get anything`);
+    this.logger.warn(`nothing is working fine, and don't get anything  ** `);
     return {} as UserOutput;
   }
 }
