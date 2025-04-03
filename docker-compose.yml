@@ -13,7 +13,7 @@ services:
       - prismadata:/var/lib/postgresql/data
 
   app:
-    restart: always
+    # restart: always # Todo: we are doing this for now, this will create conflict with other things
     container_name: main
     image: nestjs-project-app:latest # this will overwrite the existing image, if image was there
     build: 
