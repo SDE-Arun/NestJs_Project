@@ -1,14 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
 import { faker } from '@faker-js/faker/.';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as request from 'supertest';
+
+import { AuthInputDTO } from '../src/auth/dto';
 import { UserOutput } from '../src/interfaces';
 import { UserService } from '../src/user/service/user.service';
-import { AuthInputDTO } from '../src/auth/dto';
+
+import { AppModule } from './../src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let userService: UserService;
 
   beforeEach(async () => {
@@ -31,7 +34,8 @@ describe('AppController (e2e)', () => {
 
   describe('User Controller', () => {
     const USER_INFO_PATH = '/user/info';
-    const mockToken = faker.internet.jwt();
+    // const mockToken = faker.internet.jwt();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let mockOutput: UserOutput;
     beforeEach(() => {
       mockOutput = {

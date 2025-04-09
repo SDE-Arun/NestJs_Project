@@ -1,10 +1,11 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UserOutput } from '../../interfaces';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { PrismaConnectionService } from '../../prisma-connection/prisma-connection.service';
+
+import { UserOutput } from '../../interfaces';
 import { AppLoggerService } from '../../logger/logger.service';
+import { PrismaConnectionService } from '../../prisma-connection/prisma-connection.service';
 
 @Injectable()
 export class UserService {

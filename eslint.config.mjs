@@ -1,11 +1,11 @@
-import typescriptEslintEslintPlugin from '@typescript-eslint/eslint-plugin';
-import simpleImportSort from 'eslint-plugin-simple-import-sort';
-import globals from 'globals';
+// import typescriptEslintEslintPlugin from '@typescript-eslint/eslint-plugin';
+import { FlatCompat } from '@eslint/eslintrc';
+import js from '@eslint/js';
 import tsParser from '@typescript-eslint/parser';
+import eslintPluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
+import globals from 'globals';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,9 +21,13 @@ export default [
   },
   ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'),
   {
+    files: ['**/*.js', '**/*.ts', '**/*.jsx', '**/*.tsx'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
     plugins: {
-      '@typescript-eslint': typescriptEslintEslintPlugin,
-      'simple-import-sort': simpleImportSort,
+      'simple-import-sort': eslintPluginSimpleImportSort,
     },
 
     languageOptions: {
@@ -39,6 +43,8 @@ export default [
       parserOptions: {
         project: 'tsconfig.json',
         tsconfigRootDir: '/home/arun/Desktop/nestjs-project',
+        sourceType: 'module',
+        ecmaVersion: 'latest',
       },
     },
 
@@ -46,7 +52,14 @@ export default [
       '@typescript-eslint/interface-name-prefix': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       'no-console': 'warn',
-      'no-absolute-path': 'error',
+      // 'no-absolute-path': 'error',
+      'simple-import-sort/exports': 'error',
+      'simple-import-sort/imports': 'error',
+      // ❌ Disallow console.log
+      'no-console': ['error', { allow: ['warn', 'error'] }],
+      // 'import/first': 'error',
+      // 'import/newline-after-import': 'error',
+      // 'import/no-duplicates': 'error',
 
       'simple-import-sort/imports': [
         'error',

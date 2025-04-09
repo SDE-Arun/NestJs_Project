@@ -1,16 +1,19 @@
 import { faker } from '@faker-js/faker/.';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from './user.service';
-import { UserOutput } from '../../interfaces';
-import { ConfigService } from '@nestjs/config';
 import { createMock } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
+// import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+// import { UserOutput } from '../../interfaces';
 import { PrismaConnectionService } from '../../prisma-connection/prisma-connection.service';
+
+import { UserService } from './user.service';
 
 describe('User Service', () => {
   let service: UserService;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let configService: ConfigService;
   let jwtService: JwtService;
   let prismaService: PrismaConnectionService;

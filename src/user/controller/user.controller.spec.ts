@@ -1,10 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './user.controller';
 import { faker } from '@faker-js/faker/.';
-import { UserOutput } from 'src/interfaces';
-import { UserService } from '../service/user.service';
 import { createMock } from '@golevelup/ts-jest';
 import { BadRequestException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserOutput } from 'src/interfaces';
+
+import { UserService } from '../service/user.service';
+
+import { UserController } from './user.controller';
 
 describe('User Controller', () => {
   let controller: UserController;
