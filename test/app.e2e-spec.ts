@@ -4,15 +4,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
 import { AuthInputDTO } from '../src/auth/dto';
-import { UserOutput } from '../src/interfaces';
-import { UserService } from '../src/user/service/user.service';
 
+// import { UserOutput } from '../src/interfaces';
 import { AppModule } from './../src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let userService: UserService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -20,7 +17,6 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    userService = moduleFixture.get<UserService>(UserService);
     await app.init();
   });
 
@@ -35,18 +31,18 @@ describe('AppController (e2e)', () => {
   describe('User Controller', () => {
     const USER_INFO_PATH = '/user/info';
     // const mockToken = faker.internet.jwt();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let mockOutput: UserOutput;
-    beforeEach(() => {
-      mockOutput = {
-        id: faker.database.mongodbObjectId(),
-        email: faker.internet.email(),
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        createdAt: faker.date.past(),
-        updatedAt: faker.date.future(),
-      };
-    });
+
+    // let mockOutput: UserOutput;
+    // beforeEach(() => {
+    //   mockOutput = {
+    //     id: faker.database.mongodbObjectId(),
+    //     email: faker.internet.email(),
+    //     firstName: faker.person.firstName(),
+    //     lastName: faker.person.lastName(),
+    //     createdAt: faker.date.past(),
+    //     updatedAt: faker.date.future(),
+    //   };
+    // });
 
     it('returns UNAUTHORIZED {401} for missing token', async () => {
       await request(app.getHttpServer()).get(USER_INFO_PATH).expect(HttpStatus.UNAUTHORIZED);
@@ -70,7 +66,7 @@ describe('AppController (e2e)', () => {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
       };
-      return request(app.getHttpServer()).post(AUTH_SIGNUP_PATH).send(input).expect(HttpStatus.INTERNAL_SERVER_ERROR);
+      return request(app.getHttpServer()).post(AUTH_SIGNUP_PATH).send(input).expect(HttpStatus.BAD_REQUEST);
     });
 
     it('return 201{CREATED} , if calls with a valid input', () => {

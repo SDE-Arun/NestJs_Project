@@ -18,7 +18,11 @@ export class AuthService {
   ) {}
 
   async signUp(create: AuthInputDTO) {
+    // Todo! fix this, that we don't want to show objects like this all the time JSON.stringify(create)
     this.logger.log(`calling ${this.signUp.name} from the auth Service with input --> ${JSON.stringify(create)}`);
+    if (!create.password) {
+      throw new Error('Password is required for hashing');
+    }
     const hashPassword = await argon.hash(create.password);
     try {
       const user = await this.prismaService.user.create({
@@ -37,7 +41,7 @@ export class AuthService {
           createdAt: true,
         },
       });
-      this.logger.log(`${create} is saved successfully in the database `);
+      this.logger.log(`${JSON.stringify(create)} is saved successfully in the database `);
       return this.generateToken(user.id, user.email);
     } catch (error) {
       this.logger.error(`we are in error section, and getting this error ${error}`);
