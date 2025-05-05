@@ -18,7 +18,6 @@ export class AuthService {
   ) {}
 
   async signUp(create: AuthInputDTO) {
-    // Todo! fix this, that we don't want to show objects like this all the time JSON.stringify(create)
     this.logger.log(`calling ${this.signUp.name} from the auth Service with input --> ${JSON.stringify(create)}`);
     if (!create.password) {
       throw new Error('Password is required for hashing');
@@ -55,7 +54,7 @@ export class AuthService {
   }
 
   async signIn(input: AuthInputDTO) {
-    this.logger.log(`calling ${this.signIn.name} from the auth Service with input --> ${input}`);
+    this.logger.log(`calling ${this.signIn.name} from the auth Service with input --> ${JSON.stringify(input)}`);
     const user = await this.prismaService.user.findUnique({
       where: { email: input.email },
     });

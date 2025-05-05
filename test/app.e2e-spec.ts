@@ -3,10 +3,8 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
-import { AuthInputDTO } from '../src/auth/dto';
-
-// import { UserOutput } from '../src/interfaces';
 import { AppModule } from './../src/app.module';
+// import { JwtAuthGuard } from './../src/auth/guards';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -14,7 +12,10 @@ describe('AppController (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      // .overrideGuard(JwtAuthGuard)
+      // .useValue({ canActivate: () => true }) // Mock implementation
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -69,8 +70,8 @@ describe('AppController (e2e)', () => {
       return request(app.getHttpServer()).post(AUTH_SIGNUP_PATH).send(input).expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('return 201{CREATED} , if calls with a valid input', () => {
-      const input: AuthInputDTO = {
+    it('return 201{CREATED}, if calls with a valid input', () => {
+      const input = {
         email: faker.internet.email(),
         password: faker.internet.password(),
         firstName: faker.person.firstName(),
@@ -78,5 +79,41 @@ describe('AppController (e2e)', () => {
       };
       return request(app.getHttpServer()).post(AUTH_SIGNUP_PATH).send(input).expect(HttpStatus.CREATED);
     });
+
+    it('return 201{CREATED}, if calls without first & last name ', () => {
+      const input = {
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+      };
+      return request(app.getHttpServer()).post(AUTH_SIGNUP_PATH).send(input).expect(HttpStatus.CREATED);
+    });
   });
+
+  describe('signIn in Auth Controller', () => {
+    const AUTH_SIGNIN_PATH = '/auth/signin';
+
+    it('return 403{FORBIDDEN, if the user is not already present ', () => {
+      const input = {
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+      };
+
+      return request(app.getHttpServer()).post(AUTH_SIGNIN_PATH).send(input).expect(HttpStatus.FORBIDDEN);
+    });
+  });
+
+  // describe('getProfile in User Controller', () => {
+  //   const AUTH_SIGNIN_PATH = '/user/info';
+  //   it('return 403{FORBIDDEN} , if the user is not already present ', () => {
+  //     const input = {
+  //       email: faker.internet.email(),
+  //       password: faker.internet.password(),
+  //       firstName: faker.person.firstName(),
+  //       lastName: faker.person.lastName(),
+  //     };
+  //     return request(app.getHttpServer()).post(AUTH_SIGNIN_PATH).send(input).expect(HttpStatus.FORBIDDEN);
+  //   });
+  // });
 });
