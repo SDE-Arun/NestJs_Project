@@ -12,7 +12,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 //   return request.user;
 // });
 
-export const GetToken = createParamDecorator((data: string, ctx: ExecutionContext): Promise<String> => {
+export const GetToken = createParamDecorator((data: string, ctx: ExecutionContext): Promise<string> => {
   const request = ctx.switchToHttp().getRequest();
   const authorization = request.headers['authorization'];
 

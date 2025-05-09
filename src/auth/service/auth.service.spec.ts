@@ -1,14 +1,16 @@
 import { faker } from '@faker-js/faker';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
 import { createMock } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as argon from 'argon2';
+
+import { PrismaConnectionService } from '../../prisma-connection/prisma-connection.service';
 import { UserResult } from '../constants';
 import { AuthInputDTO } from '../dto';
-import * as argon from 'argon2';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaConnectionService } from '../../prisma-connection/prisma-connection.service';
-import { ConfigService } from '@nestjs/config';
+
+import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -59,12 +61,16 @@ describe('AuthService', () => {
       };
     });
 
-    it('should call the signUp function', () => {
-      //Arrange and Act
-      const result = jest.spyOn(service, 'signUp');
+    it('should call the signUp function', async () => {
+      //Arrange
+      const token = faker.internet.jwt();
+      jest.spyOn(service, 'signUp').mockResolvedValue({ access_token: token });
+
+      // Act
+      await service.signUp(mockInput);
 
       // Assert
-      expect(result).toHaveBeenCalled;
+      expect(service.signUp).toHaveBeenCalledWith(mockInput);
     });
 
     it('should return the token', async () => {

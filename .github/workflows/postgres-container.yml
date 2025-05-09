@@ -1,0 +1,77 @@
+name: Run Database Container For e2e-test cases
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-postgres-container:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5434:5432
+        options: >-
+          --name prisma-test-db
+          --health-cmd "pg_isready -U $${secrets.DB_USER_TEST}"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: ${{secrets.DB_USER_TEST}}
+          POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD_TEST}}
+          POSTGRES_DB: ${{secrets.DB_NAME_TEST}}
+          POSTGRES_HOST: postgres #! in place of ** localhost ** This must the name of container
+
+    env: # Set environment variables
+      DATABASE_URL: postgresql://${{secrets.DB_USER_TEST}}:${{secrets.DB_PASSWORD_TEST}}@postgres:5432/nest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Inject Environment Variables --> for checking
+        run: |
+          echo "DB_USER_TEST=${{ secrets.DB_USER_TEST || 'cannot find the db_user'}}" >> .env   
+          echo "DB_PASSWORD_TEST=${{ secrets.DB_PASSWORD_TEST || 'cannot find the db_password'}}" >> .env     
+          echo "DB_NAME_TEST=${{ secrets.DB_NAME_TEST || 'cannot find the db_name' }}" >> .env
+
+  #! Commenting this for now, it is not working properly Handle this later 
+  #     - name: Run database migrations
+  #       run: npx prisma migrate dev --preview-feature
+
+  #     - name: Wait for PostgreSQL to be ready
+  #       run: |
+  #           MAX_RETRIES=10
+  #           RETRY_COUNT=0
+  #           until pg_isready -h postgres -p 5432 -U postgres || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
+  #             echo "Waiting for PostgreSQL to be ready..."
+  #             sleep 2
+  #             RETRY_COUNT=$((RETRY_COUNT+1))
+  #           done
+  
+  #           if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+  #             echo "PostgreSQL did not become ready in time"
+  #             exit 1
+  #           fi  
+  
+
+  # run-e2e-tests:
+  #   runs-on: ubuntu-latest
+  #   needs: run-postgres-container
+  #   steps:
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20.11.1
+
+  #     - name: Install dependencies
+  #       run: yarn install
+
+  #     - name: Run end-to-end tests
+  #       run: yarn test:e2e

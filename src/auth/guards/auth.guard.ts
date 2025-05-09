@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 // //* Here we write --> `jwt` , as we mentioned that in "PassportStrategy" in 'jwt.strategy.ts' and same in 'user.controller.ts'

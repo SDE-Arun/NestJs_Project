@@ -26,10 +26,10 @@ yarn install
 
 ### Running the Project with Docker
 
-To run both the NestJS application and PostgreSQL with Docker, use:
+To run both the NestJS application and Prism DB with Docker, use:
 
 ```bash
-docker-compose up
+docker-compose up --build -d
 ```
 
 This will start:

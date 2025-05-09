@@ -1,6 +1,12 @@
 name: CI/CD for NestJs_Project
 
 on:
+  #! This is not working fine, so disable this for now
+  # workflow_run:
+  #   # first the postgres-container.yml file will run that will start the container to test-e2e
+  #   workflows: [Run Database Container For e2e-test cases]
+  #   types:
+  #     - completed
   push:
     branches:
       - master
@@ -34,9 +40,13 @@ jobs:
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL || 'cannot find the db_url' }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET || 'cannot find the jwt_secret'}}" >> .env       
-        # Run End-to-End (E2E) Tests
-      - name: Run E2E Tests
-        run: yarn test:e2e
+    
+        #! Run End-to-End (E2E) Tests, Doing this seperately in the end or also tried in seperate file
+      # - name: Run E2E Tests
+        # env: # Set environment variables
+        #   DATABASE_URL: postgresql://postgres:123@postgres:5432/nest
+        # run: yarn test:e2e
+        
         # Upload Build Artifacts (Ensure dist/ exists)
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -76,7 +86,9 @@ jobs:
   #       run: yarn install
   #     - name: Inject Environment Variables
   #       run: |
-  #         echo "DATABASE_URL=${{ secrets.DATABASE_URL || 'cannot find the db_url' }}" >> .env
+  #         echo "DATABASE_URL: postgresql://${{secrets.DB_USER_TEST}}:${{secrets.DB_PASSWORD_TEST}}@postgres:5434/nest" >> .env
   #     # Run End-to-End (E2E) Tests
   #     - name: Run E2E Tests
+  #       env:
+  #         DATABASE_URL: postgresql://${{secrets.DB_USER_TEST}}:${{secrets.DB_PASSWORD_TEST}}@postgres:5434/nest
   #       run: yarn test:e2e

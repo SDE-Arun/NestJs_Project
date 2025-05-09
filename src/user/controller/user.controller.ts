@@ -1,9 +1,10 @@
 import { Controller, Get, HttpCode, UseGuards } from '@nestjs/common';
-import { GetToken } from '../auth/decorator';
-import { JwtAuthGuard } from '../auth/guards';
-import { UserOutput } from '../interfaces';
-import { UserService } from './user.service';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { GetToken } from '../../auth/decorator';
+import { JwtAuthGuard } from '../../auth/guards';
+import { UserOutput } from '../../interfaces';
+import { UserService } from '../service/user.service';
 // import { User } from '@prisma/client';
 // import { JwtService } from '@nestjs/jwt';
 // import { ConfigService } from '@nestjs/config';
