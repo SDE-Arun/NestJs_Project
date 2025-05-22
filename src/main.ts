@@ -8,6 +8,7 @@ import { DebuggedProvider, DebuggedTree, SpelunkerModule } from 'nestjs-spelunke
 
 import { AppModule } from './app.module';
 import { AuthModule } from './auth/auth.module';
+import { ErrorHandling } from './errorHandling/errorHandling.exception';
 
 const getGlobalModules = (app: INestApplication) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -101,6 +102,7 @@ async function bootstrap() {
   fs.writeFileSync('auth.providers.mmd', moduleProvidersGraph);
 
   const app = await NestFactory.create(AppModule);
+  app.useGlobalFilters(new ErrorHandling());
 
   const graph = generateAppGraph(app);
   fs.writeFileSync('app.module.mmd', graph);
