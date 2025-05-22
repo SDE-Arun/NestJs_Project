@@ -1,6 +1,8 @@
 import { ArgumentsHost, Catch, ExceptionFilter, NotFoundException } from '@nestjs/common';
 import { Request, Response } from 'express';
 
+//? By default, NestJs give {500 Internal Server Error for the unhandled error}
+
 @Catch(NotFoundException)
 export class ErrorHandling implements ExceptionFilter {
   catch(exception: NotFoundException, host: ArgumentsHost) {
