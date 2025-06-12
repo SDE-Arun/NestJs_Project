@@ -9,3 +9,17 @@ import { PrismaConnectionService } from './prisma-connection.service';
   exports: [PrismaConnectionService],
 })
 export class PrismaConnectionModule {}
+
+//! Below part is used when we have error this
+//? ==>> some worker can't close properly and force exited and exit gracefully. This is likely caused by tests leaking due to improper teardown.
+//! and the above thing can be happen anywhere
+// export class PrismaConnectionModule implements OnApplicationShutdown {
+//   constructor(
+//     @Inject('')
+//     private readonly prismaClient: PrismaClient
+//   ) {}
+
+//   onApplicationShutdown() {
+//     this.prismaClient.$disconnect();
+//   }
+// }
