@@ -1,0 +1,35 @@
+name: Build and Publish Image to Docker Hub
+on:
+  workflow_run:
+    workflows:
+      - CI/CD for NestJs_Project
+    types:
+      - completed
+    branches: 
+      - master # this resolver conflict b/w workflow_run and push
+  push:
+    branches: 
+      - master
+    paths:
+      - './Dockerfile'
+
+jobs:
+  publish_images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build . -t ${{secrets.DOCKERHUB_USERNAME}}/nestjs-project-app:${{ github.run_id }}
+        
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: push image to Docker Hub
+        run: |
+          docker push ${{secrets.DOCKERHUB_USERNAME}}/nestjs-project-app:${{ github.run_id }}
+
