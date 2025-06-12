@@ -93,8 +93,6 @@ const generateModuleProvidesGraph = async (rootModule: Type<any>) => {
   return providerGraph;
 };
 
-import { AppModule } from './app.module';
-
 async function bootstrap() {
   //Todo: It means, here we start with AuthModule where we want to start the checking of everything about module
   const moduleGraph = await generateModuleGraph(AuthModule);
